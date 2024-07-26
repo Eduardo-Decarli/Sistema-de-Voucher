@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vouchers de Reserva</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Vouchers de Reserva</h1>
+    </header>
+    <main>
+        <section id="add-reservation">
+            <h2>Adicionar Reserva</h2>
+            <form id="reservation-form">
+                <!-- Campos para adicionar reserva -->
+                <label for="nome">Nome do Hóspede:</label>
+                <input type="text" id="nome" name="nome" required>
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" required>
+                <label for="quarto">Número do Quarto:</label>
+                <input type="text" id="quarto" name="quarto" required>
+                <label for="checkin">Data de Check-in:</label>
+                <input type="date" id="checkin" name="checkin" required>
+                <label for="checkout">Data de Check-out:</label>
+                <input type="date" id="checkout" name="checkout" required>
+                <label for="cafe">Café da Manhã:</label>
+                <select id="cafe" name="cafe">
+                    <option value="sim">Sim</option>
+                    <option value="nao">Não</option>
+                </select>
+                <button type="submit">Adicionar Reserva</button>
+            </form>
+        </section>
+        <section id="reservations">
+            <h2>Reservas</h2>
+            <!-- Filtros -->
+            <div>
+                <label for="filter-name">Nome do Hóspede:</label>
+                <input type="text" id="filter-name">
+                <label for="filter-month">Mês (YYYY-MM):</label>
+                <input type="text" id="filter-month">
+                <button id="filter-button">Filtrar</button>
+            </div>
+            <table id="reservations-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Quarto</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Café da Manhã</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas de reservas serão adicionadas aqui -->
+                </tbody>
+            </table>
+        </section>
+        <section id="export">
+            <h2>Exportar Dados</h2>
+            <button id="export-excel">Exportar para Excel</button>
+            <button id="export-svg">Exportar para SVG</button>
+            <button id="export-pdf">Exportar para PDF</button>
+        </section>
+    </main>
+    <script src="js/app.js"></script>
+</body>
+</html>
