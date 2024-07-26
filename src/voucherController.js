@@ -53,8 +53,6 @@ exports.getReservations = async (req, res) => {
     }
 };
 
-
-
 // Função para obter uma reserva específica pelo ID
 exports.getReservationById = async (req, res) => {
     try {
