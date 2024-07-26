@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportSvgButton = document.getElementById('export-svg');
     const exportPdfButton = document.getElementById('export-pdf');
 
-    // Adicionar reserva
+    // Função para adicionar uma nova reserva
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Carregar reservas com filtros
+    // Função para carregar reservas com filtros
     async function loadReservations(name = '', month = '') {
         try {
             let url = '/api/reservas';
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Baixar PDF
+    // Função para baixar o PDF do voucher
     window.downloadPDF = async (id) => {
         try {
             const response = await fetch(`/api/reservas/${id}/pdf`);
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Exportar para Excel
+    // Função para exportar dados para Excel
     exportExcelButton.addEventListener('click', async () => {
         try {
             const response = await fetch('/api/export/excel');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Exportar para SVG
+    // Função para exportar dados para SVG
     exportSvgButton.addEventListener('click', async () => {
         try {
             const response = await fetch('/api/export/svg');
@@ -113,17 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Filtrar reservas
+    // Função para filtrar reservas
     filterButton.addEventListener('click', () => {
         const name = filterNameInput.value.trim();
         const month = filterMonthInput.value.trim();
-        if (name || month) {
-            loadReservations(name, month);
-        } else {
-            reservationsTable.innerHTML = ''; // Limpar a tabela se nenhum filtro for aplicado
-        }
+        loadReservations(name, month);
     });
 
-    // Carregar reservas ao iniciar a página
-    loadReservations();
+    // Carregar reservas ao iniciar a página com filtro do mês atual
+    const today = new Date();
+    const currentMonth = today.toISOString().slice(0, 7); // Formato YYYY-MM
+    loadReservations('', currentMonth);
 });

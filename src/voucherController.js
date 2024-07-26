@@ -42,7 +42,7 @@ exports.getReservations = async (req, res) => {
             const [ano, mesNum] = mes.split('-');
             query.data_checkin = {
                 $gte: new Date(`${ano}-${mesNum}-01T00:00:00Z`),
-                $lt: new Date(`${ano}-${mesNum}-01T00:00:00Z`).setMonth(Number(mesNum))
+                $lt: new Date(`${ano}-${Number(mesNum) + 1}-01T00:00:00Z`)
             };
         }
 
@@ -52,6 +52,7 @@ exports.getReservations = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 // Função para obter uma reserva específica pelo ID
