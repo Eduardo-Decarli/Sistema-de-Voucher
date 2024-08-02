@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.2",
+    "title": "API Consulta CEP",
+    "description": "A API `Consulta CEP` é disponibilizada através de serviço `HTTP REST`. O objetivo da API Consulta CEP é disponibilizar um determinado endereço a partir do CEP\n## Campos retornados \n  \n| Nome | Tipo | Conteúdo | \n| ---------------------- | ---------------------- | :------------------------------------------------------------- |\n  cep         | integer     | Ex: 60130240  |\n  tipoCep     | string      | Possibilidades: logradouro, localidade, cx_postal, gr_usuario, uni_operacional  |\n  subtipocep  | string      | Ex: S |\n  uf          | string      | Ex: CE  |\n  cidade      | string      | Ex: Fortaleza |\n  bairro      | string      | Ex: São João do Taupe  |\n  endereco    | string      | Ex: Avenia Pontes Vieira  |\n  complemento | string     | Ex: \"- até 1550 - lado par\"  |\n  codigoIBGE | string | Ex:  |\n             \n\n# Authentication\n\n<!-- ReDoc-Inject: <security-definitions> -->"
+  },
+  "paths": {
+    "/consulta/cep/{cep}": {
+      "get": {
+        "tags": [
+          "Consultar CEP"
+        ],
+        "summary": "Consulta CEP",
+        "x-auth-type": "Application & Application User",
+        "x-throttling-tier": "Unlimited",
+        "description": "\nApresenta o endereço referente a um CEP\n\n ## Exemplo\n\n  #### Chamada\n  \n    https://h-apigateway.conectagov.estaleiro.serpro.gov.br/api-cep/v1/consulta/cep/60130240\n    \n  #### Retorno\n    {\n      \"cep\": \"60130240\",\n      \"tipoCep\": \"logradouro\",\n      \"subTipoCep\": \"S\",\n      \"uf\": \"CE\",\n      \"cidade\": \"Fortaleza\",\n      \"bairro\": \"São João do Tauape\",\n      \"endereco\": \"Avenida Pontes Vieira\",\n      \"complemento\": \"De 2 Até 1550 Lado Par\",\n      \"codigoIBGE\": \"\"\n  }",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-cpf-usuario",
+            "description": "CPF do usuário da requisição",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          },
+          {
+            "in": "path",
+            "name": "cep",
+            "description": "Número do CEP",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retorna os dados de endereço do referentes ao CEP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultaCep"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CEP inválido."
+          },
+          "404": {
+            "description": "CEP não encontrado"
+          },
+          "500": {
+            "description": "Erros do backend e/ou dos servidores de dados"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth2": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://h-apigateway.conectagov.estaleiro.serpro.gov.br/api-cep/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "description": "A autenticação é feita usando um token de acesso padrão JWT (JSON Web Token). Este token tem duração de 2 horas, recomendamos armazená-lo na aplicação cliente para uso nas Requisições ao serviço durante seu tempo de validade. Chamadas desnecessárias ao serviço de geração de tokens geram tráfego adicional na rede e podem degradar a performance da API, aumentando os tempos de resposta.",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://h-apigateway.conectagov.estaleiro.serpro.gov.br/oauth2/jwt-token",
+            "scopes": {}
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ConsultaCep": {
+        "type": "object",
+        "properties": {
+          "cep": {
+            "type": "string"
+          },
+          "tipoCep": {
+            "type": "string"
+          },
+          "subTipoCep": {
+            "type": "string"
+          },
+          "uf": {
+            "type": "string"
+          },
+          "cidade": {
+            "type": "string"
+          },
+          "bairro": {
+            "type": "string"
+          },
+          "endereco": {
+            "type": "string"
+          },
+          "complemento": {
+            "type": "string"
+          },
+          "codigoIBGE": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

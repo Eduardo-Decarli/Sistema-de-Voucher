@@ -18,14 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
             email: formData.get('email'),
             cep: formData.get('CEP'),
             cidade: formData.get('cidade'),
+            bairro: formData.get('bairro'),
             endereco: formData.get('endereço'),
+            uf: formData.get('uf'),
             numero_quarto: formData.get('quarto'),
             data_checkin: formData.get('checkin'),
             data_checkout: formData.get('checkout'),
             cafe_da_manha: formData.get('cafe') === 'sim',
-            valorReserva: formData.get('valor-reserva')
+            valorReserva: formData.get('valor-reserva'),
+            
         };
 
+        pesquisaCEP()
         try {
             await fetch('/api/reservas', {
                 method: 'POST',
@@ -67,6 +71,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Erro ao carregar reservas:', error);
+        }
+    }
+
+    //Função para puxar endereço da API
+    document.getElementById('CEP').addEventListener('focusout', pesquisaCEP)
+    async function pesquisaCEP() {
+        var cep = document.getElementById('CEP').value.trim();
+        if (cep.length === 8) {
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('cidade').value = data.localidade;
+                    document.getElementById('endereço').value = data.logradouro;
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('uf').value = data.uf;
+                } else {
+                    throw new Error("Cep não encontrado")
+                }
+            } catch (error) {
+                console.error("Erro ao buscar CEP: ", error)
+            }
+        }else{
+            console.error('CEP Inválido')
         }
     }
 
