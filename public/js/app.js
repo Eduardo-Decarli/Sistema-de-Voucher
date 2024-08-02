@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterButton = document.getElementById('filter-button');
     const exportExcelButton = document.getElementById('export-excel');
     const exportSvgButton = document.getElementById('export-svg');
-    const exportPdfButton = document.getElementById('export-pdf');
 
     // Função para adicionar uma nova reserva
     form.addEventListener('submit', async (e) => {
@@ -15,10 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = {
             nome_hospede: formData.get('nome'),
             telefone: formData.get('telefone'),
+            cpf: formData.get('CPF'),
+            email: formData.get('email'),
+            cep: formData.get('CEP'),
+            cidade: formData.get('cidade'),
+            endereco: formData.get('endereço'),
             numero_quarto: formData.get('quarto'),
             data_checkin: formData.get('checkin'),
             data_checkout: formData.get('checkout'),
-            cafe_da_manha: formData.get('cafe') === 'sim'
+            cafe_da_manha: formData.get('cafe') === 'sim',
+            valorReserva: formData.get('valor-reserva')
         };
 
         try {
@@ -28,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             form.reset();
+            //método que carrega as reservas após inserir uma nova
             loadReservations();
         } catch (error) {
             console.error('Erro ao adicionar reserva:', error);
@@ -47,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const reservations = await response.json();
             reservationsTable.innerHTML = '';
             reservations.forEach(reservation => {
+                //coloca as informações do filtro nas linhas da tabela
                 const row = reservationsTable.insertRow();
                 row.insertCell(0).textContent = reservation.nome_hospede;
                 row.insertCell(1).textContent = reservation.telefone;
@@ -54,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.insertCell(3).textContent = new Date(reservation.data_checkin).toLocaleDateString();
                 row.insertCell(4).textContent = new Date(reservation.data_checkout).toLocaleDateString();
                 row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
-                const actionsCell = row.insertCell(6);
+                row.insertCell(6).textContent = reservation.valorReserva;
+                const actionsCell = row.insertCell(7);
                 actionsCell.innerHTML = `<button onclick="downloadPDF('${reservation._id}')">PDF</button>`;
             });
         } catch (error) {
@@ -119,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = filterMonthInput.value.trim();
         loadReservations(name, month);
     });
-
+    //Não está funcionando
     // Carregar reservas ao iniciar a página com filtro do mês atual
     const today = new Date();
     const currentMonth = today.toISOString().slice(0, 7); // Formato YYYY-MM

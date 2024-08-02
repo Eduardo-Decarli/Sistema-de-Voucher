@@ -7,10 +7,16 @@ const ExcelJS = require('exceljs');
 const reservationSchema = new mongoose.Schema({
     nome_hospede: String,
     telefone: String,
+    cpf: String,
+    email: String,
+    cep: String,
+    cidade: String,
+    endereco: String,
     numero_quarto: String,
     data_checkin: Date,
     data_checkout: Date,
-    cafe_da_manha: Boolean
+    cafe_da_manha: Boolean,
+    valorReserva: String
 });
 
 // Criar o modelo de reserva

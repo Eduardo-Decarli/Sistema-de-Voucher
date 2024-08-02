@@ -15,10 +15,22 @@
             <h2>Adicionar Reserva</h2>
             <form id="reservation-form">
                 <!-- Campos para adicionar reserva -->
+                <!--Dados do hospede-->
                 <label for="nome">Nome do Hóspede:</label>
                 <input type="text" id="nome" name="nome" required>
                 <label for="telefone">Telefone:</label>
                 <input type="text" id="telefone" name="telefone" required>
+                <label for="CPF">CPF:</label>
+                <input type="text" id="CPF" name="CPF" required>
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" required>
+                <label for="CEP">CEP:</label>
+                <input type="text" id="CEP" name="CEP" required>
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" name="cidade" required>
+                <label for="endereço">Endereço:</label>
+                <input type="text" id="endereço" name="endereço" required>
+                <!--dados do quarto-->
                 <label for="quarto">Número do Quarto:</label>
                 <input type="text" id="quarto" name="quarto" required>
                 <label for="checkin">Data de Check-in:</label>
@@ -30,6 +42,9 @@
                     <option value="sim">Sim</option>
                     <option value="nao">Não</option>
                 </select>
+                <label for="valor-reserva">Valor da Reserva:</label>
+                <input type="text" id="valor-reserva" name="valor-reserva" required>
+                
                 <button type="submit">Adicionar Reserva</button>
             </form>
         </section>
@@ -53,7 +68,8 @@
                         <th>Quarto</th>
                         <th>Check-in</th>
                         <th>Check-out</th>
-                        <th>Café da Manhã</th>
+                        <th>Café</th>
+                        <th>Valor</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -66,7 +82,6 @@
             <h2>Exportar Dados</h2>
             <button id="export-excel">Exportar para Excel</button>
             <button id="export-svg">Exportar para SVG</button>
-            <button id="export-pdf">Exportar para PDF</button>
         </section>
     </main>
     <script src="js/app.js"></script>
