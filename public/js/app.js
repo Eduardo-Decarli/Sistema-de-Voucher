@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
+        const estacionamento = formData.get('estacionamento') === 'sim';
         const data = {
             nome_hospede: formData.get('nome'),
             telefone: formData.get('telefone'),
@@ -25,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
             data_checkin: formData.get('checkin'),
             data_checkout: formData.get('checkout'),
             cafe_da_manha: formData.get('cafe') === 'sim',
-            estacionamento: formData.get('estacionamento') === 'sim',
-            entradaCar: (estacionamento === 'sim') ? formData.get('entradaCar') : null,
-            saidaCar: (estacionamento === 'sim') ? formData.get('saidaCar') : null,
+            estacionamento: estacionamento,
+            entradaCar: estacionamento ? formData.get('entradaCar') : null,
+            saidaCar: estacionamento ? formData.get('saidaCar') : null,
             valorReserva: formData.get('valor-reserva')
         };
-
+    
         try {
             await fetch('/api/reservas', {
                 method: 'POST',
@@ -38,42 +39,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(data)
             });
             form.reset();
-            //método que carrega as reservas após inserir uma nova
             loadReservations();
         } catch (error) {
             console.error('Erro ao adicionar reserva:', error);
         }
     });
 
-    // Função para carregar reservas com filtros
-    async function loadReservations(name = '', month = '') {
-        try {
-            let url = '/api/reservas';
-            const params = new URLSearchParams();
-            if (name) params.append('nome', name);
-            if (month) params.append('mes', month);
-            if (params.toString()) url += `?${params.toString()}`;
-
-            const response = await fetch(url);
-            const reservations = await response.json();
-            reservationsTable.innerHTML = '';
-            reservations.forEach(reservation => {
-                //coloca as informações do filtro nas linhas da tabela
-                const row = reservationsTable.insertRow();
-                row.insertCell(0).textContent = reservation.nome_hospede;
-                row.insertCell(1).textContent = reservation.telefone;
-                row.insertCell(2).textContent = reservation.numero_quarto;
-                row.insertCell(3).textContent = new Date(reservation.data_checkin).toLocaleDateString();
-                row.insertCell(4).textContent = new Date(reservation.data_checkout).toLocaleDateString();
-                row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
-                row.insertCell(6).textContent = reservation.valorReserva;
-                const actionsCell = row.insertCell(7);
-                actionsCell.innerHTML = `<button onclick="downloadPDF('${reservation._id}')">PDF</button>`;
-            });
-        } catch (error) {
-            console.error('Erro ao carregar reservas:', error);
-        }
+    function formatDate(date) {
+        const d = new Date(date);
+        const day = (`0${d.getDate()}`).slice(-2);
+        const month = (`0${d.getMonth() + 1}`).slice(-2);
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+
+    // Função para carregar reservas com filtros
+async function loadReservations(name = '', month = '') {
+    try {
+        let url = '/api/reservas';
+        const params = new URLSearchParams();
+        if (name) params.append('nome', name);
+        if (month) params.append('mes', month);
+        if (params.toString()) url += `?${params.toString()}`;
+
+        const response = await fetch(url);
+        const reservations = await response.json();
+        reservationsTable.innerHTML = '';
+        reservations.forEach(reservation => {
+            const row = reservationsTable.insertRow();
+            row.insertCell(0).textContent = reservation.nome_hospede;
+            row.insertCell(1).textContent = reservation.telefone;
+            row.insertCell(2).textContent = reservation.numero_quarto;
+            row.insertCell(3).textContent = formatDate(reservation.data_checkin);
+            row.insertCell(4).textContent = formatDate(reservation.data_checkout);
+            row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
+            row.insertCell(6).textContent = reservation.valorReserva;
+            const actionsCell = row.insertCell(7);
+            actionsCell.innerHTML = `<button onclick="downloadPDF('${reservation._id}')">PDF</button>`;
+        });
+    } catch (error) {
+        console.error('Erro ao carregar reservas:', error);
+    }
+}
     //Função para puxar endereço da API
     document.getElementById('CEP').addEventListener('focusout', pesquisaCEP)
     async function pesquisaCEP() {

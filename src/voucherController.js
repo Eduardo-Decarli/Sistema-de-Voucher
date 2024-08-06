@@ -13,14 +13,24 @@ const reservationSchema = new mongoose.Schema({
     cidade: String,
     endereco: String,
     numero_quarto: String,
-    data_checkin: Date,
-    data_checkout: Date,
+    data_checkin: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
+    data_checkout: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
     cafe_da_manha: Boolean,
     estacionamento: Boolean,
-    entradaCar: Date,
-    saidaCar: Date,
+    entradaCar: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
+    saidaCar: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
     valorReserva: String
 });
+
+// Função utilitária para formatar datas
+function formatDate(date) {
+    if (!date) return null;
+    const d = new Date(date);
+    const day = (`0${d.getDate()}`).slice(-2);
+    const month = (`0${d.getMonth() + 1}`).slice(-2);
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+}
 
 // Criar o modelo de reserva
 const Reservation = mongoose.model('Reservation', reservationSchema);
@@ -28,6 +38,16 @@ const Reservation = mongoose.model('Reservation', reservationSchema);
 // Função para criar uma nova reserva
 exports.createReservation = async (req, res) => {
     try {
+        // Formatar as datas
+        req.body.data_checkin = formatDate(req.body.data_checkin);
+        req.body.data_checkout = formatDate(req.body.data_checkout);
+        if (req.body.entradaCar) {
+            req.body.entradaCar = formatDate(req.body.entradaCar);
+        }
+        if (req.body.saidaCar) {
+            req.body.saidaCar = formatDate(req.body.saidaCar);
+        }
+
         // Criar uma nova reserva com os dados do corpo da requisição
         const reservation = new Reservation(req.body);
         await reservation.save();
