@@ -16,6 +16,9 @@ const reservationSchema = new mongoose.Schema({
     data_checkin: Date,
     data_checkout: Date,
     cafe_da_manha: Boolean,
+    estacionamento: Boolean,
+    entradaCar: Date,
+    saidaCar: Date,
     valorReserva: String
 });
 

@@ -25,11 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
             data_checkin: formData.get('checkin'),
             data_checkout: formData.get('checkout'),
             cafe_da_manha: formData.get('cafe') === 'sim',
-            valorReserva: formData.get('valor-reserva'),
-            
+            estacionamento: formData.get('estacionamento') === 'sim',
+            entradaCar: (estacionamento === 'sim') ? formData.get('entradaCar') : null,
+            saidaCar: (estacionamento === 'sim') ? formData.get('saidaCar') : null,
+            valorReserva: formData.get('valor-reserva')
         };
 
-        pesquisaCEP()
         try {
             await fetch('/api/reservas', {
                 method: 'POST',
@@ -73,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar reservas:', error);
         }
     }
-
     //Função para puxar endereço da API
     document.getElementById('CEP').addEventListener('focusout', pesquisaCEP)
     async function pesquisaCEP() {
@@ -93,10 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error("Erro ao buscar CEP: ", error)
             }
-        }else{
+        } else {
             console.error('CEP Inválido')
         }
     }
+
 
     // Função para baixar o PDF do voucher
     window.downloadPDF = async (id) => {
@@ -161,3 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentMonth = today.toISOString().slice(0, 7); // Formato YYYY-MM
     loadReservations('', currentMonth);
 });
+
+//dropdow do estacionamento
+function checkinCar() {
+    const estacionamento = document.getElementById("estacionamento").value;
+    const displayEstacionamento = document.querySelector('.estacionamentoDisplay');
+
+    if (estacionamento == "sim") {
+        displayEstacionamento.style.display = 'inline-block';
+    } else {
+        displayEstacionamento.style.display = 'none'
+    }
+}
