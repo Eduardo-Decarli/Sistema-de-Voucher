@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saidaCar: estacionamento ? formData.get('saidaCar') : null,
             valorReserva: formData.get('valor-reserva')
         };
-    
+
         try {
             await fetch('/api/reservas', {
                 method: 'POST',
@@ -54,33 +54,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Função para carregar reservas com filtros
-async function loadReservations(name = '', month = '') {
-    try {
-        let url = '/api/reservas';
-        const params = new URLSearchParams();
-        if (name) params.append('nome', name);
-        if (month) params.append('mes', month);
-        if (params.toString()) url += `?${params.toString()}`;
+    async function loadReservations(name = '', month = '') {
+        try {
+            let url = '/api/reservas';
+            const params = new URLSearchParams();
+            if (name) params.append('nome', name);
+            if (month) params.append('mes', month);
+            if (params.toString()) url += `?${params.toString()}`;
 
-        const response = await fetch(url);
-        const reservations = await response.json();
-        reservationsTable.innerHTML = '';
-        reservations.forEach(reservation => {
-            const row = reservationsTable.insertRow();
-            row.insertCell(0).textContent = reservation.nome_hospede;
-            row.insertCell(1).textContent = reservation.telefone;
-            row.insertCell(2).textContent = reservation.numero_quarto;
-            row.insertCell(3).textContent = formatDate(reservation.data_checkin);
-            row.insertCell(4).textContent = formatDate(reservation.data_checkout);
-            row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
-            row.insertCell(6).textContent = reservation.valorReserva;
-            const actionsCell = row.insertCell(7);
-            actionsCell.innerHTML = `<button onclick="downloadPDF('${reservation._id}')">PDF</button>`;
-        });
-    } catch (error) {
-        console.error('Erro ao carregar reservas:', error);
+            const response = await fetch(url);
+            const reservations = await response.json();
+            reservationsTable.innerHTML = '';
+            reservations.forEach(reservation => {
+                const row = reservationsTable.insertRow();
+                row.insertCell(0).textContent = reservation.nome_hospede;
+                row.insertCell(1).textContent = reservation.telefone;
+                row.insertCell(2).textContent = reservation.numero_quarto;
+                row.insertCell(3).textContent = formatDate(reservation.data_checkin);
+                row.insertCell(4).textContent = formatDate(reservation.data_checkout);
+                row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
+                row.insertCell(6).textContent = reservation.valorReserva;
+                const actionsCell = row.insertCell(7);
+                actionsCell.innerHTML =
+                    `<button onclick="downloadPDF('${reservation._id}')">PDF</button>
+            <button onclick="deleteReservation('${reservation._id}')">Deletar</button>
+            `;
+            });
+        } catch (error) {
+            console.error('Erro ao carregar reservas:', error);
+        }
     }
-}
+
+    //Função para deletar Reservas
+    window.deleteReservation = async (id) => {
+        if (confirm("Você tem certeza que deseja deletar esta reserva?")) {
+            try {
+                const response = await fetch(`/api/reservas/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Reserva deletada com sucesso!');
+                    loadReservations(); // Recarrega a tabela de reservas
+                } else {
+                    const errorData = await response.json();
+                    alert('Erro ao deletar reserva: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Erro ao deletar reserva:', error);
+            }
+        }
+    };
+
     //Função para puxar endereço da API
     document.getElementById('CEP').addEventListener('focusout', pesquisaCEP)
     async function pesquisaCEP() {
@@ -104,7 +129,6 @@ async function loadReservations(name = '', month = '') {
             console.error('CEP Inválido')
         }
     }
-
 
     // Função para baixar o PDF do voucher
     window.downloadPDF = async (id) => {
@@ -181,3 +205,4 @@ function checkinCar() {
         displayEstacionamento.style.display = 'none'
     }
 }
+

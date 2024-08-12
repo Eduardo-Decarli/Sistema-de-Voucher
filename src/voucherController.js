@@ -108,6 +108,10 @@ exports.deleteReservation = async (req, res) => {
     }
 };
 
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+
 // Função para gerar e baixar o voucher em PDF
 exports.downloadVoucherPDF = async (req, res) => {
     try {
@@ -117,22 +121,57 @@ exports.downloadVoucherPDF = async (req, res) => {
         }
 
         // Criar um novo documento PDF
-        const doc = new PDFDocument();
+        const doc = new PDFDocument({ margin: 50 });
         const fileName = `voucher-${reservation.id}.pdf`;
         
         // Definir o cabeçalho para download
         res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
         res.setHeader('Content-Type', 'application/pdf');
 
-        // Adicionar conteúdo ao PDF
-        doc.fontSize(25).text('Voucher de Reserva', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(16).text(`Nome do Hóspede: ${reservation.nome_hospede}`);
-        doc.text(`Telefone: ${reservation.telefone}`);
-        doc.text(`Número do Quarto: ${reservation.numero_quarto}`);
-        doc.text(`Data de Check-in: ${reservation.data_checkin.toDateString()}`);
-        doc.text(`Data de Check-out: ${reservation.data_checkout.toDateString()}`);
-        doc.text(`Café da Manhã: ${reservation.cafe_da_manha ? 'Sim' : 'Não'}`);
+        // Adicionar uma imagem ao PDF (exemplo: logo da empresa)
+        const logoPath = path.join(__dirname, 'path/to/logo.png'); // ajuste o caminho para o logo
+        if (fs.existsSync(logoPath)) {
+            doc.image(logoPath, 50, 45, { width: 150 })
+               .moveDown();
+        }
+
+        // Adicionar título ao PDF
+        doc.fontSize(25).text('Voucher de Reserva', { align: 'center' })
+           .moveDown(2);
+
+        // Adicionar uma linha separadora
+        doc.moveTo(50, 120)
+           .lineTo(550, 120)
+           .stroke();
+
+        // Adicionar informações do hóspede
+        doc.fontSize(20).text('Dados do Hóspede', { align: 'left' })
+           .moveDown();
+        doc.fontSize(16).text(`Nome: ${reservation.nome_hospede}`)
+           .text(`Telefone: ${reservation.telefone}`)
+           .text(`CPF: ${reservation.CPF}`)
+           .text(`Email: ${reservation.email}`)
+           .text(`Endereço: ${reservation.endereço}, ${reservation.bairro}, ${reservation.cidade}, ${reservation.uf} - CEP: ${reservation.CEP}`)
+           .moveDown(2);
+
+        // Adicionar informações da reserva
+        doc.fontSize(20).text('Dados da Reserva', { align: 'left' })
+           .moveDown();
+        doc.fontSize(16).text(`Número do Quarto: ${reservation.numero_quarto}`)
+           .text(`Data de Check-in: ${reservation.data_checkin.toDateString()}`)
+           .text(`Data de Check-out: ${reservation.data_checkout.toDateString()}`)
+           .text(`Café da Manhã: ${reservation.cafe_da_manha ? 'Sim' : 'Não'}`)
+           .text(`Estacionamento: ${reservation.estacionamento ? 'Sim' : 'Não'}`)
+           .text(`Valor da Reserva: R$ ${reservation.valor_reserva}`)
+           .moveDown(2);
+
+        // Adicionar uma linha separadora
+        doc.moveTo(50, doc.y)
+           .lineTo(550, doc.y)
+           .stroke();
+
+        // Adicionar uma mensagem final
+        doc.moveDown(2).fontSize(16).text('Obrigado por escolher nossa pousada. Desejamos uma excelente estadia!', { align: 'center' });
 
         // Finalizar e enviar o PDF
         doc.pipe(res);
@@ -141,6 +180,7 @@ exports.downloadVoucherPDF = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Função para exportar dados para SVG
 exports.exportToSVG = async (req, res) => {
