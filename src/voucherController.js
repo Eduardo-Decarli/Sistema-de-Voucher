@@ -14,12 +14,12 @@ const reservationSchema = new mongoose.Schema({
     endereco: String,
     uf: String,
     numero_quarto: String,
-    data_checkin: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
-    data_checkout: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
+    data_checkin: String,  
+    data_checkout: String,  
     cafe_da_manha: Boolean,
     estacionamento: Boolean,
-    entradaCar: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
-    saidaCar: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
+    entradaCar: String,
+    saidaCar: String,
     valorReserva: String
 });
 
