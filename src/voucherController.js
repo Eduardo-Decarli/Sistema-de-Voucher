@@ -132,7 +132,7 @@ exports.downloadVoucherPDF = async (req, res) => {
         res.setHeader('Content-Type', 'application/pdf');
 
         // Adicionar uma imagem ao PDF (exemplo: logo da empresa)
-        const logoPath = path.join(__dirname, '../public/imagens/SolRiso.jpg'); // ajuste o caminho para o logo
+        const logoPath = path.join(__dirname, '../public/imagens/SolRiso.jpg');
         if (fs.existsSync(logoPath)) {
             doc.image(logoPath, 50, 30, { width: 120 })
                .moveDown();
@@ -165,7 +165,12 @@ exports.downloadVoucherPDF = async (req, res) => {
            .text(`Data de Check-out: ${reservation.data_checkout}`)
            .text(`Café da Manhã: ${reservation.cafe_da_manha ? 'Sim' : 'Não'}`)
            .text(`Estacionamento: ${reservation.estacionamento ? 'Sim' : 'Não'}`)
-           .text(`Valor da Reserva: R$ ${reservation.valorReserva}`)
+           if (reservation.estacionamento) {
+            doc.fontSize(16)
+               .text(`Entrada do Estacionamento: ${reservation.entradaCar || 'N/A'}`)
+               .text(`Saída do Estacionamento: ${reservation.saidaCar || 'N/A'}`);
+        }
+        doc.fontSize(16).text(`Valor da Reserva: R$ ${reservation.valorReserva}`)
            .moveDown(2);
 
         // Adicionar uma linha separadora
