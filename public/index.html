@@ -112,6 +112,11 @@
         </section>
     </main>
     <script src="js/app.js"></script>
+    <script>
+        window.addEventListener('beforeunload', () => {
+            fetch('/shutdown', { method: 'POST' });
+        });
+    </script>
 </body>
 
 </html>

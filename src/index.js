@@ -15,7 +15,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pousada')
         console.error('Erro ao conectar ao MongoDB:', err);
     });
 
-
 // Configurar middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +30,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Rota para encerrar o servidor
+app.post('/shutdown', (req, res) => {
+    res.send('Servidor encerrando...');
+    process.exit(0); // Encerra o servidor
+});
+
 // Middleware para tratamento de erros
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -43,6 +48,6 @@ app.listen(PORT, async () => {
     console.log(`Servidor rodando na porta ${PORT}`);
     
     // Importar o módulo open dinamicamente
-    const open = (await import('open')).default;
+    const { default: open } = await import('open');
     open(`http://localhost:${PORT}`);
 });
