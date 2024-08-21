@@ -1,6 +1,5 @@
 // Importar módulos necessários
 const mongoose = require('mongoose');
-const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 
 // Definir o esquema do Mongoose para uma reserva
@@ -11,7 +10,9 @@ const reservationSchema = new mongoose.Schema({
     email: String,
     cep: String,
     cidade: String,
+    bairro: String,
     endereco: String,
+    uf: String,
     numero_quarto: String,
     data_checkin: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
     data_checkout: String,  // Armazenar como String para manter o formato "dd/mm/yyyy"
@@ -23,14 +24,16 @@ const reservationSchema = new mongoose.Schema({
 });
 
 // Função utilitária para formatar datas
-function formatDate(date) {
-    if (!date) return null;
-    const d = new Date(date);
-    const day = (`0${d.getDate()}`).slice(-2);
-    const month = (`0${d.getMonth() + 1}`).slice(-2);
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+function formatDate(dateString) {
+    if (!dateString) return null;
+    
+    const [year, month, day] = dateString.includes('-')
+        ? dateString.split('-')
+        : dateString.split('/').reverse();
+    
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
 }
+
 
 // Criar o modelo de reserva
 const Reservation = mongoose.model('Reservation', reservationSchema);
@@ -129,14 +132,14 @@ exports.downloadVoucherPDF = async (req, res) => {
         res.setHeader('Content-Type', 'application/pdf');
 
         // Adicionar uma imagem ao PDF (exemplo: logo da empresa)
-        const logoPath = path.join(__dirname, 'path/to/logo.png'); // ajuste o caminho para o logo
+        const logoPath = path.join(__dirname, '../public/imagens/SolRiso.jpg'); // ajuste o caminho para o logo
         if (fs.existsSync(logoPath)) {
-            doc.image(logoPath, 50, 45, { width: 150 })
+            doc.image(logoPath, 50, 30, { width: 120 })
                .moveDown();
         }
 
         // Adicionar título ao PDF
-        doc.fontSize(25).text('Voucher de Reserva', { align: 'center' })
+        doc.fontSize(25).text('Voucher da Reserva', { align: 'center' })
            .moveDown(2);
 
         // Adicionar uma linha separadora
@@ -149,20 +152,20 @@ exports.downloadVoucherPDF = async (req, res) => {
            .moveDown();
         doc.fontSize(16).text(`Nome: ${reservation.nome_hospede}`)
            .text(`Telefone: ${reservation.telefone}`)
-           .text(`CPF: ${reservation.CPF}`)
+           .text(`CPF: ${reservation.cpf}`)
            .text(`Email: ${reservation.email}`)
-           .text(`Endereço: ${reservation.endereço}, ${reservation.bairro}, ${reservation.cidade}, ${reservation.uf} - CEP: ${reservation.CEP}`)
+           .text(`Endereço: ${reservation.endereco}, ${reservation.bairro}, ${reservation.cidade}, ${reservation.uf} - CEP: ${reservation.cep}`)
            .moveDown(2);
 
         // Adicionar informações da reserva
         doc.fontSize(20).text('Dados da Reserva', { align: 'left' })
            .moveDown();
         doc.fontSize(16).text(`Número do Quarto: ${reservation.numero_quarto}`)
-           .text(`Data de Check-in: ${reservation.data_checkin.toDateString()}`)
-           .text(`Data de Check-out: ${reservation.data_checkout.toDateString()}`)
+           .text(`Data de Check-in: ${reservation.data_checkin}`)
+           .text(`Data de Check-out: ${reservation.data_checkout}`)
            .text(`Café da Manhã: ${reservation.cafe_da_manha ? 'Sim' : 'Não'}`)
            .text(`Estacionamento: ${reservation.estacionamento ? 'Sim' : 'Não'}`)
-           .text(`Valor da Reserva: R$ ${reservation.valor_reserva}`)
+           .text(`Valor da Reserva: R$ ${reservation.valorReserva}`)
            .moveDown(2);
 
         // Adicionar uma linha separadora

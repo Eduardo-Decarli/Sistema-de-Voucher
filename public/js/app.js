@@ -23,12 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
             endereco: formData.get('endereço'),
             uf: formData.get('uf'),
             numero_quarto: formData.get('quarto'),
-            data_checkin: formData.get('checkin'),
-            data_checkout: formData.get('checkout'),
+            data_checkin: formatDate(formData.get('checkin')),  
+            data_checkout: formatDate(formData.get('checkout')),  
             cafe_da_manha: formData.get('cafe') === 'sim',
             estacionamento: estacionamento,
-            entradaCar: estacionamento ? formData.get('entradaCar') : null,
-            saidaCar: estacionamento ? formData.get('saidaCar') : null,
+            entradaCar: estacionamento ? formatDate(formData.get('entradaCar')) : null,  
+            saidaCar: estacionamento ? formatDate(formData.get('saidaCar')) : null, 
             valorReserva: formData.get('valor-reserva')
         };
 
@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.insertCell(0).textContent = reservation.nome_hospede;
                 row.insertCell(1).textContent = reservation.telefone;
                 row.insertCell(2).textContent = reservation.numero_quarto;
-                row.insertCell(3).textContent = formatDate(reservation.data_checkin);
-                row.insertCell(4).textContent = formatDate(reservation.data_checkout);
-                row.insertCell(5).textContent = reservation.cafe_da_manha ? 'Sim' : 'Não';
+                row.insertCell(3).textContent = reservation.data_checkin;
+                row.insertCell(4).textContent = reservation.data_checkout;
+                row.insertCell(5).textContent = reservation.estacionamento ? 'Sim' : 'Não';
                 row.insertCell(6).textContent = reservation.valorReserva;
                 const actionsCell = row.insertCell(7);
                 actionsCell.innerHTML =
